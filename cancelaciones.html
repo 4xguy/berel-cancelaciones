@@ -417,50 +417,67 @@
             position: absolute;
             top: 20px;
             right: 20px;
+            z-index: 100;
         }
         
-        .user-btn {
+        .user-toggle-btn {
             background: #6c757d;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 20px;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .user-btn:hover {
+        .user-toggle-btn:hover {
             background: #5a6268;
-            transform: translateY(-2px);
+            transform: scale(1.1);
         }
         
-        .user-info {
+        .user-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #2d2d2d;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            min-width: 180px;
+            overflow: hidden;
+        }
+        
+        .dropdown-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #2d2d2d;
-            padding: 8px 16px;
-            border-radius: 20px;
+            color: #e0e0e0;
+            border-bottom: 1px solid #444;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background: #3d3d3d;
+        }
+        
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
         }
         
         #userDisplay {
             color: #4CAF50;
             font-weight: 500;
-        }
-        
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px 8px;
-            transition: all 0.2s;
-        }
-        
-        .logout-btn:hover {
-            color: #ff6b6b;
         }
         
         .modal {
@@ -550,14 +567,19 @@
             </a>
             <h1>Sistema de Cancelaciones</h1>
             <div class="user-section" id="userSection">
-                <button class="user-btn" id="loginBtn" onclick="showLoginModal()">
-                    <i class="fas fa-user"></i> Iniciar Sesión
+                <button class="user-toggle-btn" onclick="toggleUserMenu()" title="Usuario">
+                    <i class="fas fa-user-circle"></i>
                 </button>
-                <div class="user-info" id="userInfo" style="display: none;">
-                    <span id="userDisplay"></span>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <div class="dropdown-item" id="loginItem" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </div>
+                    <div class="dropdown-item" id="userInfoItem" style="display: none;">
+                        <i class="fas fa-user"></i> <span id="userDisplay"></span>
+                    </div>
+                    <div class="dropdown-item" id="logoutItem" style="display: none;" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </div>
                 </div>
             </div>
             <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por descripción...">
@@ -917,12 +939,30 @@
             }
         }
 
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userSection = document.getElementById('userSection');
+            if (!userSection.contains(event.target)) {
+                document.getElementById('userDropdown').style.display = 'none';
+            }
+        });
+
         function initializeApp() {
             // Check if user is logged in
             if (currentUser) {
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
+                document.getElementById('loginItem').style.display = 'none';
+                document.getElementById('userInfoItem').style.display = 'flex';
+                document.getElementById('logoutItem').style.display = 'flex';
                 document.getElementById('userDisplay').textContent = currentUser;
+            } else {
+                document.getElementById('loginItem').style.display = 'flex';
+                document.getElementById('userInfoItem').style.display = 'none';
+                document.getElementById('logoutItem').style.display = 'none';
             }
             
             loadFavorites();
@@ -997,6 +1037,7 @@
         
         function showLoginModal() {
             document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('userDropdown').style.display = 'none';
             document.getElementById('userIdInput').focus();
         }
         
@@ -1045,9 +1086,13 @@
                 loadFavorites();
                 
                 // Update UI
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
+                document.getElementById('loginItem').style.display = 'none';
+                document.getElementById('userInfoItem').style.display = 'flex';
+                document.getElementById('logoutItem').style.display = 'flex';
                 document.getElementById('userDisplay').textContent = userId;
+                
+                // Hide dropdown
+                document.getElementById('userDropdown').style.display = 'none';
                 
                 // Refresh the display
                 renderReasonButtons();
@@ -1065,8 +1110,12 @@
             loadFavorites();
             
             // Update UI
-            document.getElementById('loginBtn').style.display = 'block';
-            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('loginItem').style.display = 'flex';
+            document.getElementById('userInfoItem').style.display = 'none';
+            document.getElementById('logoutItem').style.display = 'none';
+            
+            // Hide dropdown
+            document.getElementById('userDropdown').style.display = 'none';
             
             // Refresh the display
             renderReasonButtons();
