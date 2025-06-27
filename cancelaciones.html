@@ -324,31 +324,33 @@
             border-color: #007bff;
         }
         
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
         .nav-btn {
             background-color: #f0f0f0;
             border: 2px solid #ddd;
             border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 18px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
             color: #666;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .nav-btn:hover {
             background-color: #e0e0e0;
-            transform: translateY(-50%) translateY(-2px);
-        }
-        
-        .nav-btn:first-child {
-            left: 20px;
+            transform: translateY(-2px);
         }
         
         .nav-btn.success {
-            right: 20px;
             background-color: #4CAF50;
             color: white;
             border-color: #4CAF50;
@@ -586,10 +588,12 @@
     <!-- Screen 2: Stage Selection -->
     <div id="stageScreen" class="screen">
         <div class="header">
-            <button class="nav-btn" onclick="goToReasons()" title="Regresar">
-                <i class="fas fa-arrow-left"></i>
-            </button>
             <h1>Selecciona la Etapa</h1>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToReasons()" title="Regresar">
+                    <i class="fas fa-arrow-left"></i> Regresar
+                </button>
+            </div>
         </div>
         <div class="stage-grid" id="stageButtons"></div>
     </div>
@@ -597,13 +601,15 @@
     <!-- Screen 3: Results -->
     <div id="resultScreen" class="screen">
         <div class="header">
-            <button class="nav-btn" onclick="goToStages()" title="Regresar">
-                <i class="fas fa-arrow-left"></i>
-            </button>
             <h1>Información de Cancelación</h1>
-            <button class="nav-btn success" onclick="goToReasons()" title="Nueva Consulta">
-                <i class="fas fa-plus-circle"></i>
-            </button>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="goToStages()" title="Regresar">
+                    <i class="fas fa-arrow-left"></i> Regresar
+                </button>
+                <button class="nav-btn success" onclick="goToReasons()" title="Nueva Consulta">
+                    <i class="fas fa-plus-circle"></i> Nueva Consulta
+                </button>
+            </div>
         </div>
         <div class="result-container">
             <div class="result-section">
