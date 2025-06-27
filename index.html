@@ -233,31 +233,35 @@
         .breadcrumb {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
         
         .breadcrumb-item {
             background: #3498db;
             color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 16px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .breadcrumb-item:hover {
             background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
         
         .breadcrumb-arrow {
             color: #666;
-            font-size: 20px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -275,7 +279,9 @@
     <div id="stageScreen" class="screen">
         <div class="header">
             <h1>Selecciona la Etapa</h1>
-            <div id="selectedReason" style="margin-top: 10px; color: #888;"></div>
+        </div>
+        <div class="breadcrumb" id="stageBreadcrumb">
+            <!-- Breadcrumb will be added dynamically -->
         </div>
         <div class="stage-grid" id="stageButtons"></div>
         <button class="nav-button" onclick="goToReasons()">← Regresar</button>
@@ -601,8 +607,13 @@
 
         function selectReason(reason) {
             selectedReason = reason;
-            document.getElementById('selectedReason').textContent = 
-                `${reason.description} (${reason.code})`;
+            
+            // Update stage breadcrumb
+            const stageBreadcrumb = document.getElementById('stageBreadcrumb');
+            stageBreadcrumb.innerHTML = `
+                <div class="breadcrumb-item" onclick="goToReasons()">${reason.description}</div>
+            `;
+            
             renderStageButtons();
             showScreen('stageScreen');
         }
