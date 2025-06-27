@@ -343,40 +343,14 @@
             color: #ffc107;
         }
         
-        .selection-summary {
-            background-color: #f8f9fa;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 10px 20px 20px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .summary-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-        }
-        
-        .summary-label {
-            font-weight: bold;
-            color: #007bff;
-            min-width: 100px;
-        }
-        
-        .summary-value {
-            color: #333;
-            font-weight: 500;
-        }
-        
         #summaryCode {
             font-family: monospace;
-            background-color: #e9ecef;
+            background-color: #2d2d2d;
             padding: 4px 8px;
             border-radius: 4px;
+            display: inline-block;
+            color: #00ff00;
+            border: 1px solid #444;
         }
     </style>
 </head>
@@ -427,21 +401,22 @@
         <div class="breadcrumb" id="breadcrumb">
             <!-- Breadcrumb items will be added dynamically -->
         </div>
-        <div class="selection-summary">
-            <div class="summary-item">
-                <span class="summary-label">Código:</span>
-                <span class="summary-value" id="summaryCode"></span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Descripción:</span>
-                <span class="summary-value" id="summaryDescription"></span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Etapa:</span>
-                <span class="summary-value" id="summaryStage"></span>
-            </div>
-        </div>
         <div class="result-container">
+            <div class="result-section">
+                <div class="result-label">Código</div>
+                <div class="result-value" id="summaryCode"></div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-label">Descripción</div>
+                <div class="result-value" id="summaryDescription"></div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-label">Etapa</div>
+                <div class="result-value" id="summaryStage"></div>
+            </div>
+            
             <div class="result-section">
                 <div class="result-label">Motivo de Cancelación</div>
                 <div class="motivo-options">
