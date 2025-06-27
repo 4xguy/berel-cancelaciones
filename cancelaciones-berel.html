@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Sistema de Cancelaciones Berel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 16px;
+            background: #1a1a1a;
+            color: #fff;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .screen {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .header {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 18px;
+            background: #3d3d3d;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .search-bar::placeholder {
+            color: #888;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        @media (min-width: 600px) {
+            .button-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .reason-button {
+            background: linear-gradient(145deg, #3d3d3d, #2d2d2d);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reason-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .reason-button .description {
+            font-size: 18px;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .reason-button .code {
+            font-size: 14px;
+            color: #888;
+            font-family: monospace;
+        }
+
+        .stage-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .stage-button {
+            background: linear-gradient(145deg, #2196F3, #1976D2);
+            border: none;
+            border-radius: 15px;
+            padding: 25px;
+            font-size: 20px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .stage-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+        }
+
+        .stage-button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result-container {
+            background: #2d2d2d;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .result-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .motivo-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .motivo-option {
+            background: #3d3d3d;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .motivo-code {
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .nav-button {
+            background: #555;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+
+        .nav-button:active {
+            transform: scale(0.98);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .procedure-text {
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: #4CAF50;
+        }
+
+        .no-highlight {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <!-- Screen 1: Reason Selection -->
+    <div id="reasonScreen" class="screen active">
+        <div class="header">
+            <h1>Sistema de Cancelaciones</h1>
+            <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por descripción...">
+        </div>
+        <div class="button-grid" id="reasonButtons"></div>
+    </div>
+
+    <!-- Screen 2: Stage Selection -->
+    <div id="stageScreen" class="screen">
+        <div class="header">
+            <h1>Selecciona la Etapa</h1>
+            <div id="selectedReason" style="margin-top: 10px; color: #888;"></div>
+        </div>
+        <div class="stage-grid" id="stageButtons"></div>
+        <button class="nav-button" onclick="goToReasons()">← Regresar</button>
+    </div>
+
+    <!-- Screen 3: Results -->
+    <div id="resultScreen" class="screen">
+        <div class="header">
+            <h1>Información de Cancelación</h1>
+        </div>
+        <div class="result-container">
+            <div class="result-section">
+                <div class="result-label">Motivo de Cancelación</div>
+                <div class="motivo-options">
+                    <div class="motivo-option">
+                        <span class="motivo-code">01</span> - Comprobantes emitidos con errores con relación
+                    </div>
+                    <div class="motivo-option">
+                        <span class="motivo-code">02</span> - Comprobantes emitidos con errores sin relación
+                    </div>
+                    <div class="motivo-option">
+                        <span class="motivo-code">03</span> - No se llevó a cabo la transacción
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-label">Procedimiento</div>
+                <div class="result-value procedure-text" id="procedure"></div>
+            </div>
+            
+            <div class="result-section" id="periodicidadSection">
+                <div class="result-label">Periodicidad</div>
+                <div class="result-value" id="periodicidad"></div>
+            </div>
+            
+            <div class="result-section" id="sustitucionSection">
+                <div class="result-label">Aplica Sustitución en Corte</div>
+                <div class="result-value" id="sustitucion"></div>
+            </div>
+            
+            <div class="result-section" id="observacionesSection">
+                <div class="result-label">Observaciones Especiales</div>
+                <div class="result-value" id="observaciones"></div>
+            </div>
+        </div>
+        <button class="nav-button" onclick="goToStages()">← Regresar</button>
+        <button class="nav-button" style="background: #4CAF50;" onclick="goToReasons()">Nueva Consulta</button>
+    </div>
+
+    <script>
+        // Embedded data from Excel - based on the shaded cells in the screenshot
+        const cancellationData = [
+            {
+                code: "MDC00001",
+                description: "ERROR EN DESCUENTO",
+                stages: ["Otro Documento"],
+                motivos: ["01"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Generalmente, mismo día",
+                aplicaSustitucion: "No",
+                observaciones: "Si se detecta el descuento posteriormente, se realiza nota de crédito por descuento y se aplica a futuras ventas"
+            },
+            {
+                code: "MDC00002",
+                description: "ERROR EN CLIENTE (CAMBIO DE CLAVE CLIENTE)",
+                stages: ["Prefactura", "Factura", "Remision"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Solicita se deje prefa libre, se manda información de clave de cliente correcta, cuando se libere la prefactura jalar nuevamente; motivo 04: Sustitución de CPO previos y su respectivo comentario y guardar. Oficina: Cancelar factura solicitada con relación \"02\".",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: ""
+            },
+            {
+                code: "MDC00003",
+                description: "ERROR EN CÓDIGO DE PRODUCTO",
+                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Generalmente, mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00004",
+                description: "AGREGÓ PRODUCTO",
+                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00005",
+                description: "QUITO PRODUCTO",
+                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00006",
+                description: "CAMBIO PRODUCTO",
+                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00007",
+                description: "ERROR EN COMANDA",
+                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "NO",
+                observaciones: ""
+            },
+            {
+                code: "MDC00008",
+                description: "ERROR EN FORMA O MÉTODO DE PAGO DE SAE-SAT (EXTERNO)",
+                stages: ["Prefactura", "Factura", "Remision"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: ""
+            },
+            {
+                code: "MDC00009",
+                description: "ERROR EN ENVASADO",
+                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00010",
+                description: "ERROR EN TIMBRADO",
+                stages: ["Factura"],
+                motivos: ["01"],
+                procedure: "Al no estar timbrada la factura, no tiene efecto fiscal si se deja libre prefa",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "Aline",
+                observaciones: ""
+            },
+            {
+                code: "MDC00011",
+                description: "CAMBIO Y/O ACTUALIZACIÓN DATOS DE CLIENTE (MISMA CLAVE, CORRECCIÓN EN DOMICILIO, ETC)",
+                stages: ["Factura", "Remision"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: ""
+            },
+            {
+                code: "MDC00012",
+                description: "ERROR EN SERIE",
+                stages: ["Prefactura", "Factura", "Remision"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No",
+                observaciones: "Si la venta de contado se dejó en serie de crédito, no aplica sustitución en corte, ya que la venta no ha sido depositada y debe estar como existente en caja."
+            },
+            {
+                code: "MDC00013",
+                description: "NO SE ENCONTRÓ CLIENTE",
+                stages: ["Prefactura", "Remision"],
+                motivos: ["03"],
+                procedure: "Tienda: Solicita la cancelación total en caso de no haber producto igualado o envasado, en caso de tenerlo, se deberá solicitar autorización para dejar PREFA LIBRE EN SEGUIMIENTO y manejar la venta como nueva, o en su caso dar tratamiento de código \"C\"",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00014",
+                description: "USO DE CFDI",
+                stages: ["Factura"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: ""
+            },
+            {
+                code: "MDC00015",
+                description: "SOLICITÓ FACTURA",
+                stages: ["Remision"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Solicita se deje prefa libre, se manda información de clave de cliente correcta, cuando se libere la prefactura jalar nuevamente; motivo 04: Sustitución de CPO previos y su respectivo comentario y guardar. Oficina: Cancelar factura solicitada con relación \"02\".",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: ""
+            },
+            {
+                code: "MDC00016",
+                description: "SOLICITÓ FACTURA MENOS DE $3,000",
+                stages: ["Remision"],
+                motivos: ["02"],
+                procedure: "Tienda: Solicita se deje prefa libre, se manda información de clave de cliente correcta, cuando se libere la prefactura jalar nuevamente; motivo 04: Sustitución de CPO previos y su respectivo comentario y guardar. Oficina: Cancelar factura solicitada con relación \"02\".",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: "Se elige error sin relación, ya que al solo existir una factura y a las que pasa son más de una, no se puede relacionar la misma cancelación dos veces"
+            },
+            {
+                code: "MDC00017",
+                description: "NO TENÍA DINERO EL CLIENTE",
+                stages: ["Prefactura", "Remision"],
+                motivos: ["03"],
+                procedure: "Tienda: Solicita la cancelación total en caso de no haber producto igualado o envasados, en caso de tenerlo, se deberá solicitar autorización para dejar PREFA LIBRE EN SEGUIMIENTO y manejar la venta como nueva, o en su caso dar tratamiento de código \"C\"",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00018",
+                description: "SALIÓ PRECIO DEL PRODUCTO EN $0",
+                stages: ["Prefactura", "Factura", "Remision"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00019",
+                description: "ALTA DE CLIENTE",
+                stages: ["Prefactura"],
+                motivos: ["02"],
+                procedure: "La prefactura no se timbra en sae",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            },
+            {
+                code: "MDC00020",
+                description: "NO RELACIONÓ",
+                stages: ["Factura"],
+                motivos: ["02"],
+                procedure: "Tienda: Solicita se deje prefa libre, cuando se libere la prefactura jalar nuevamente, relacionar con motivo 04: Sustitución de CFDI previos y su respectivo comentario y guardar. Oficina: Cancelar Factura solicitada con relación \"02\"",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "",
+                observaciones: ""
+            },
+            {
+                code: "MDC00021",
+                description: "RÉGIMEN FISCAL INCORRECTO",
+                stages: ["Factura"],
+                motivos: ["01", "02"],
+                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
+                periodicidad: "Puede ser mismo día o diferente día",
+                aplicaSustitucion: "No/Si",
+                observaciones: ""
+            },
+            {
+                code: "MDC00022",
+                description: "CLIENTE CANCELÓ LA VENTA",
+                stages: ["Prefactura", "Remision"],
+                motivos: ["03"],
+                procedure: "Tienda: Solicita la cancelación total en caso de no haber producto igualado o envasados, en caso de tenerlo, se deberá solicitar autorización para dejar PREFA LIBRE EN SEGUIMIENTO y manejar la venta como nueva, o en su caso dar tratamiento de código \"C\"",
+                periodicidad: "Mismo día",
+                aplicaSustitucion: "No",
+                observaciones: ""
+            }
+        ];
+
+        const stages = [
+            "Prefactura",
+            "Factura",
+            "Remision",
+            "Otro Documento",
+            "Cancelacion total",
+            "Prefactura Libre"
+        ];
+
+        let selectedReason = null;
+        let selectedStage = null;
+
+        function initializeApp() {
+            renderReasonButtons();
+            document.getElementById('searchInput').addEventListener('input', filterReasons);
+        }
+
+        function renderReasonButtons() {
+            const container = document.getElementById('reasonButtons');
+            container.innerHTML = '';
+            
+            cancellationData.forEach(item => {
+                const button = document.createElement('button');
+                button.className = 'reason-button';
+                button.onclick = () => selectReason(item);
+                button.innerHTML = `
+                    <div class="description">${item.description}</div>
+                    <div class="code">${item.code}</div>
+                `;
+                container.appendChild(button);
+            });
+        }
+
+        function filterReasons(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const buttons = document.querySelectorAll('.reason-button');
+            
+            buttons.forEach((button, index) => {
+                const item = cancellationData[index];
+                const match = item.description.toLowerCase().includes(searchTerm) ||
+                             item.code.toLowerCase().includes(searchTerm);
+                button.style.display = match ? 'block' : 'none';
+            });
+        }
+
+        function selectReason(reason) {
+            selectedReason = reason;
+            document.getElementById('selectedReason').textContent = 
+                `${reason.description} (${reason.code})`;
+            renderStageButtons();
+            showScreen('stageScreen');
+        }
+
+        function renderStageButtons() {
+            const container = document.getElementById('stageButtons');
+            container.innerHTML = '';
+            
+            stages.forEach(stage => {
+                const button = document.createElement('button');
+                button.className = 'stage-button';
+                button.textContent = stage;
+                button.disabled = !selectedReason.stages.includes(stage);
+                if (!button.disabled) {
+                    button.onclick = () => selectStage(stage);
+                }
+                container.appendChild(button);
+            });
+        }
+
+        function selectStage(stage) {
+            selectedStage = stage;
+            showResults();
+        }
+
+        function showResults() {
+            // Show applicable motivos based on selected reason
+            const motivoOptions = document.querySelectorAll('.motivo-option');
+            motivoOptions.forEach((option, index) => {
+                const motivoCode = ['01', '02', '03'][index];
+                if (selectedReason.motivos.includes(motivoCode)) {
+                    option.style.background = '#2d4a2b';
+                    option.style.border = '1px solid #4CAF50';
+                } else {
+                    option.style.background = '#3d3d3d';
+                    option.style.border = 'none';
+                }
+            });
+
+            document.getElementById('procedure').textContent = selectedReason.procedure;
+            
+            // Periodicidad
+            if (selectedReason.periodicidad) {
+                document.getElementById('periodicidad').textContent = selectedReason.periodicidad;
+                document.getElementById('periodicidadSection').classList.remove('hidden');
+            } else {
+                document.getElementById('periodicidadSection').classList.add('hidden');
+            }
+            
+            // Sustitución
+            if (selectedReason.aplicaSustitucion) {
+                document.getElementById('sustitucion').textContent = selectedReason.aplicaSustitucion;
+                document.getElementById('sustitucionSection').classList.remove('hidden');
+            } else {
+                document.getElementById('sustitucionSection').classList.add('hidden');
+            }
+            
+            // Observaciones
+            if (selectedReason.observaciones) {
+                document.getElementById('observaciones').textContent = selectedReason.observaciones;
+                document.getElementById('observacionesSection').classList.remove('hidden');
+            } else {
+                document.getElementById('observacionesSection').classList.add('hidden');
+            }
+            
+            showScreen('resultScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function goToReasons() {
+            selectedReason = null;
+            selectedStage = null;
+            document.getElementById('searchInput').value = '';
+            renderReasonButtons();
+            showScreen('reasonScreen');
+        }
+
+        function goToStages() {
+            showScreen('stageScreen');
+        }
+
+        // Initialize app
+        initializeApp();
+    </script>
+</body>
+</html>
