@@ -503,11 +503,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+        
+        .user-toggle-btn.logged-in {
+            background: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .user-toggle-btn.logged-in::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border: 2px solid #1a1a1a;
+            border-radius: 50%;
         }
         
         .user-toggle-btn:hover {
             background: #5a6268;
             transform: scale(1.1);
+        }
+        
+        .user-toggle-btn.logged-in:hover {
+            background: #45a049;
         }
         
         .user-dropdown {
@@ -641,7 +663,7 @@
                     <h1>Sistema de Cancelaciones</h1>
                 </div>
                 <div class="user-section" id="userSection">
-                <button class="user-toggle-btn" onclick="toggleUserMenu()" title="Usuario">
+                <button class="user-toggle-btn" id="userToggleBtn" onclick="toggleUserMenu()" title="Usuario">
                     <i class="fas fa-user-circle"></i>
                 </button>
                 <div class="user-dropdown" id="userDropdown" style="display: none;">
@@ -1039,15 +1061,20 @@
 
         function initializeApp() {
             // Check if user is logged in
+            const userBtn = document.getElementById('userToggleBtn');
             if (currentUser) {
                 document.getElementById('loginItem').style.display = 'none';
                 document.getElementById('userInfoItem').style.display = 'flex';
                 document.getElementById('logoutItem').style.display = 'flex';
                 document.getElementById('userDisplay').textContent = currentUser;
+                userBtn.classList.add('logged-in');
+                userBtn.title = `Conectado: ${currentUser}`;
             } else {
                 document.getElementById('loginItem').style.display = 'flex';
                 document.getElementById('userInfoItem').style.display = 'none';
                 document.getElementById('logoutItem').style.display = 'none';
+                userBtn.classList.remove('logged-in');
+                userBtn.title = 'Usuario';
             }
             
             loadFavorites();
@@ -1176,6 +1203,11 @@
                 document.getElementById('logoutItem').style.display = 'flex';
                 document.getElementById('userDisplay').textContent = userId;
                 
+                // Update login button appearance
+                const userBtn = document.getElementById('userToggleBtn');
+                userBtn.classList.add('logged-in');
+                userBtn.title = `Conectado: ${userId}`;
+                
                 // Hide dropdown
                 document.getElementById('userDropdown').style.display = 'none';
                 
@@ -1198,6 +1230,11 @@
             document.getElementById('loginItem').style.display = 'flex';
             document.getElementById('userInfoItem').style.display = 'none';
             document.getElementById('logoutItem').style.display = 'none';
+            
+            // Update login button appearance
+            const userBtn = document.getElementById('userToggleBtn');
+            userBtn.classList.remove('logged-in');
+            userBtn.title = 'Usuario';
             
             // Hide dropdown
             document.getElementById('userDropdown').style.display = 'none';
