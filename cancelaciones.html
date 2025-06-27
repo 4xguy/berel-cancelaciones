@@ -42,19 +42,31 @@
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
-            text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .header h1 {
             font-size: 24px;
-            margin-bottom: 10px;
+            margin: 0;
+            text-align: left;
         }
         
         .header-logo {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 10px;
+            width: 40px;
+            height: 40px;
             object-fit: contain;
         }
 
@@ -427,9 +439,7 @@
         }
         
         .user-section {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: relative;
             z-index: 100;
         }
         
@@ -575,12 +585,15 @@
     <!-- Screen 1: Reason Selection -->
     <div id="reasonScreen" class="screen active">
         <div class="header">
-            <a href="index.html" style="position: absolute; left: 20px; top: 20px; color: #007bff; text-decoration: none; font-size: 18px;">
-                <i class="fas fa-arrow-left"></i> Inicio
-            </a>
-            <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
-            <h1>Sistema de Cancelaciones</h1>
-            <div class="user-section" id="userSection">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="index.html" style="color: #007bff; text-decoration: none; font-size: 18px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-arrow-left"></i> Inicio
+                    </a>
+                    <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
+                    <h1>Sistema de Cancelaciones</h1>
+                </div>
+                <div class="user-section" id="userSection">
                 <button class="user-toggle-btn" onclick="toggleUserMenu()" title="Usuario">
                     <i class="fas fa-user-circle"></i>
                 </button>
@@ -595,6 +608,7 @@
                         <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                     </div>
                 </div>
+            </div>
             </div>
             <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por descripción...">
             <div class="filter-buttons">
@@ -621,8 +635,12 @@
     <!-- Screen 2: Stage Selection -->
     <div id="stageScreen" class="screen">
         <div class="header">
-            <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
-            <h1>Selecciona la Etapa</h1>
+            <div class="header-content">
+                <div class="header-left">
+                    <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
+                    <h1>Selecciona la Etapa</h1>
+                </div>
+            </div>
             <div class="nav-buttons">
                 <button class="nav-btn" onclick="goToReasons()" title="Regresar">
                     <i class="fas fa-arrow-left"></i>
@@ -635,8 +653,12 @@
     <!-- Screen 3: Results -->
     <div id="resultScreen" class="screen">
         <div class="header">
-            <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
-            <h1>Información de Cancelación</h1>
+            <div class="header-content">
+                <div class="header-left">
+                    <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
+                    <h1>Información de Cancelación</h1>
+                </div>
+            </div>
             <div class="nav-buttons">
                 <button class="nav-btn" onclick="goToStages()" title="Regresar">
                     <i class="fas fa-arrow-left"></i>
