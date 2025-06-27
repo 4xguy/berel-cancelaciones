@@ -50,12 +50,36 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 15px;
+            position: relative;
         }
         
-        .header-left {
+        .header-center {
             display: flex;
             align-items: center;
             gap: 15px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .home-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .home-btn:hover {
+            background: #5a6268;
+            transform: scale(1.1);
         }
 
         .header h1 {
@@ -586,10 +610,10 @@
     <div id="reasonScreen" class="screen active">
         <div class="header">
             <div class="header-content">
-                <div class="header-left">
-                    <a href="index.html" style="color: #007bff; text-decoration: none; font-size: 18px; display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-arrow-left"></i> Inicio
-                    </a>
+                <button class="home-btn" onclick="window.location.href='index.html'" title="Inicio">
+                    <i class="fas fa-home"></i>
+                </button>
+                <div class="header-center">
                     <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
                     <h1>Sistema de Cancelaciones</h1>
                 </div>
@@ -636,7 +660,7 @@
     <div id="stageScreen" class="screen">
         <div class="header">
             <div class="header-content">
-                <div class="header-left">
+                <div class="header-center">
                     <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
                     <h1>Selecciona la Etapa</h1>
                 </div>
@@ -654,7 +678,7 @@
     <div id="resultScreen" class="screen">
         <div class="header">
             <div class="header-content">
-                <div class="header-left">
+                <div class="header-center">
                     <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
                     <h1>Información de Cancelación</h1>
                 </div>
