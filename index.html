@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Sistema de Cancelaciones Berel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -290,6 +291,57 @@
         #observacionesSection .result-value {
             font-weight: 500;
         }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .filter-btn {
+            background-color: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .filter-btn:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .reason-card {
+            position: relative;
+        }
+        
+        .favorite-star {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .favorite-star:hover {
+            color: #ffc107;
+        }
+        
+        .favorite-star.active {
+            color: #ffc107;
+        }
     </style>
 </head>
 <body>
@@ -298,6 +350,20 @@
         <div class="header">
             <h1>Sistema de Cancelaciones</h1>
             <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por descripción...">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all" title="Todos">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button class="filter-btn" data-filter="error" title="Error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </button>
+                <button class="filter-btn" data-filter="cliente" title="Cliente">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="filter-btn" data-filter="favorites" title="Favoritos">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
         </div>
         <div class="button-grid" id="reasonButtons"></div>
     </div>
@@ -598,36 +664,82 @@
 
         let selectedReason = null;
         let selectedStage = null;
+        let currentFilter = 'all';
+        let favorites = JSON.parse(localStorage.getItem('cancellationFavorites') || '[]');
 
         function initializeApp() {
             renderReasonButtons();
             document.getElementById('searchInput').addEventListener('input', filterReasons);
+            
+            // Add filter button listeners
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const button = e.target.closest('.filter-btn');
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    currentFilter = button.dataset.filter;
+                    renderReasonButtons();
+                });
+            });
         }
 
         function renderReasonButtons() {
             const container = document.getElementById('reasonButtons');
             container.innerHTML = '';
             
-            cancellationData.forEach(item => {
+            // Filter data based on current filter
+            let filteredData = cancellationData;
+            
+            if (currentFilter === 'error') {
+                filteredData = cancellationData.filter(item => 
+                    item.description.toUpperCase().includes('ERROR')
+                );
+            } else if (currentFilter === 'cliente') {
+                filteredData = cancellationData.filter(item => 
+                    item.description.toUpperCase().includes('CLIENTE')
+                );
+            } else if (currentFilter === 'favorites') {
+                filteredData = cancellationData.filter(item => 
+                    favorites.includes(item.code)
+                );
+            }
+            
+            filteredData.forEach(item => {
                 const button = document.createElement('button');
-                button.className = 'reason-button';
+                button.className = 'reason-button reason-card';
                 button.onclick = () => selectReason(item);
+                
+                const isFavorite = favorites.includes(item.code);
+                
                 button.innerHTML = `
                     <div class="description">${item.description}</div>
                     <div class="code">${item.code}</div>
+                    <i class="fas fa-star favorite-star ${isFavorite ? 'active' : ''}" 
+                       onclick="event.stopPropagation(); toggleFavorite('${item.code}')"></i>
                 `;
                 container.appendChild(button);
             });
+        }
+        
+        function toggleFavorite(code) {
+            const index = favorites.indexOf(code);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(code);
+            }
+            localStorage.setItem('cancellationFavorites', JSON.stringify(favorites));
+            renderReasonButtons();
         }
 
         function filterReasons(e) {
             const searchTerm = e.target.value.toLowerCase();
             const buttons = document.querySelectorAll('.reason-button');
             
-            buttons.forEach((button, index) => {
-                const item = cancellationData[index];
-                const match = item.description.toLowerCase().includes(searchTerm) ||
-                             item.code.toLowerCase().includes(searchTerm);
+            buttons.forEach((button) => {
+                const description = button.querySelector('.description').textContent.toLowerCase();
+                const code = button.querySelector('.code').textContent.toLowerCase();
+                const match = description.includes(searchTerm) || code.includes(searchTerm);
                 button.style.display = match ? 'block' : 'none';
             });
         }
