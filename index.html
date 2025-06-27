@@ -352,6 +352,29 @@
             color: #00ff00;
             border: 1px solid #444;
         }
+        
+        .procedure-section {
+            margin-bottom: 15px;
+        }
+        
+        .procedure-label {
+            display: inline-block;
+            font-weight: bold;
+            color: #007bff;
+            background-color: rgba(0, 123, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #007bff;
+        }
+        
+        .procedure-text {
+            display: block;
+            padding-left: 20px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -838,7 +861,29 @@
                 }
             });
 
-            document.getElementById('procedure').textContent = selectedReason.procedure;
+            // Format procedure text to separate Tienda and Oficina
+            const procedureElement = document.getElementById('procedure');
+            const procedureText = selectedReason.procedure;
+            
+            // Split by "Oficina:" and format
+            if (procedureText.includes('Oficina:')) {
+                const parts = procedureText.split('Oficina:');
+                const tiendaPart = parts[0].replace('Tienda:', '').trim();
+                const oficinaPart = parts[1].trim();
+                
+                procedureElement.innerHTML = `
+                    <div class="procedure-section">
+                        <span class="procedure-label">Tienda:</span>
+                        <span class="procedure-text">${tiendaPart}</span>
+                    </div>
+                    <div class="procedure-section">
+                        <span class="procedure-label">Oficina:</span>
+                        <span class="procedure-text">${oficinaPart}</span>
+                    </div>
+                `;
+            } else {
+                procedureElement.textContent = procedureText;
+            }
             
             // Periodicidad
             if (selectedReason.periodicidad) {
