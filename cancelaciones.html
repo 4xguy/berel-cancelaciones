@@ -50,6 +50,13 @@
             font-size: 24px;
             margin-bottom: 10px;
         }
+        
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
 
         .search-bar {
             width: 100%;
@@ -571,6 +578,7 @@
             <a href="index.html" style="position: absolute; left: 20px; top: 20px; color: #007bff; text-decoration: none; font-size: 18px;">
                 <i class="fas fa-arrow-left"></i> Inicio
             </a>
+            <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
             <h1>Sistema de Cancelaciones</h1>
             <div class="user-section" id="userSection">
                 <button class="user-toggle-btn" onclick="toggleUserMenu()" title="Usuario">
@@ -613,6 +621,7 @@
     <!-- Screen 2: Stage Selection -->
     <div id="stageScreen" class="screen">
         <div class="header">
+            <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
             <h1>Selecciona la Etapa</h1>
             <div class="nav-buttons">
                 <button class="nav-btn" onclick="goToReasons()" title="Regresar">
@@ -626,6 +635,7 @@
     <!-- Screen 3: Results -->
     <div id="resultScreen" class="screen">
         <div class="header">
+            <img src="GC-2023 Light.png" alt="Grupo Color Logo" class="header-logo">
             <h1>Información de Cancelación</h1>
             <div class="nav-buttons">
                 <button class="nav-btn" onclick="goToStages()" title="Regresar">
