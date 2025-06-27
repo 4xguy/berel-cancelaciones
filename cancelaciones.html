@@ -60,6 +60,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
+            white-space: nowrap;
         }
         
         .home-btn {
@@ -83,9 +84,21 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 22px;
             margin: 0;
             text-align: left;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .header-logo {
+                width: 35px;
+                height: 35px;
+            }
         }
         
         .header-logo {
@@ -346,7 +359,7 @@
         
         .filter-buttons {
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 10px;
             margin-top: 15px;
         }
@@ -375,7 +388,7 @@
         
         .nav-buttons {
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 10px;
             margin-top: 15px;
         }
