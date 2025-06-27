@@ -360,6 +360,9 @@
                 <button class="filter-btn" data-filter="cliente" title="Cliente">
                     <i class="fas fa-user"></i>
                 </button>
+                <button class="filter-btn" data-filter="other" title="Otros">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
                 <button class="filter-btn" data-filter="favorites" title="Favoritos">
                     <i class="fas fa-star"></i>
                 </button>
@@ -697,6 +700,11 @@
             } else if (currentFilter === 'cliente') {
                 filteredData = cancellationData.filter(item => 
                     item.description.toUpperCase().includes('CLIENTE')
+                );
+            } else if (currentFilter === 'other') {
+                filteredData = cancellationData.filter(item => 
+                    !item.description.toUpperCase().includes('ERROR') && 
+                    !item.description.toUpperCase().includes('CLIENTE')
                 );
             } else if (currentFilter === 'favorites') {
                 filteredData = cancellationData.filter(item => 
