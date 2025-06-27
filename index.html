@@ -229,6 +229,36 @@
         .no-highlight {
             background: #f44336;
         }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb-item {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .breadcrumb-item:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .breadcrumb-arrow {
+            color: #666;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -255,6 +285,9 @@
     <div id="resultScreen" class="screen">
         <div class="header">
             <h1>Información de Cancelación</h1>
+        </div>
+        <div class="breadcrumb" id="breadcrumb">
+            <!-- Breadcrumb items will be added dynamically -->
         </div>
         <div class="result-container">
             <div class="result-section">
@@ -596,6 +629,14 @@
         }
 
         function showResults() {
+            // Update breadcrumb
+            const breadcrumb = document.getElementById('breadcrumb');
+            breadcrumb.innerHTML = `
+                <div class="breadcrumb-item" onclick="goToReasons()">${selectedReason.description}</div>
+                <span class="breadcrumb-arrow">→</span>
+                <div class="breadcrumb-item" onclick="goToStages()">${selectedStage}</div>
+            `;
+            
             // Show applicable motivos based on selected reason
             const motivoOptions = document.querySelectorAll('.motivo-option');
             motivoOptions.forEach((option, index) => {
