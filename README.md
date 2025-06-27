@@ -1,5 +1,10 @@
-# Sistema de Cancelaciones Berel
+# Grupo Color - Portal de Aplicaciones
 
+Portal de aplicaciones web para Grupo Color. Incluye herramientas y sistemas para optimizar procesos empresariales.
+
+## Aplicaciones Disponibles
+
+### Sistema de Cancelaciones
 Un sistema interactivo para consultar códigos y procedimientos de cancelación en el sistema Berel.
 
 ## 🚀 Características
@@ -35,9 +40,11 @@ Un sistema interactivo para consultar códigos y procedimientos de cancelación 
 ### Sistema de Usuarios
 
 1. **Iniciar Sesión**: Haz clic en el botón "Iniciar Sesión" en la esquina superior derecha
-2. **ID de Usuario**: Ingresa un ID único (ej: juan123, maria_ventas, etc.)
+2. **Credenciales**: Ingresa tu ID único y contraseña
+   - Primera vez: Se creará tu cuenta automáticamente
+   - Usuarios existentes: Debes usar la contraseña correcta
 3. **Sincronización**: Tus favoritos se guardan con tu ID de usuario
-4. **Acceso Multi-dispositivo**: Usa el mismo ID en cualquier dispositivo para acceder a tus favoritos
+4. **Acceso Multi-dispositivo**: Usa el mismo ID y contraseña en cualquier dispositivo
 5. **Cerrar Sesión**: Haz clic en el ícono rojo para volver a favoritos locales
 
 ### Detalles de la Pantalla de Resultados
@@ -57,7 +64,8 @@ La pantalla de resultados muestra la información completa organizada en seccion
 
 ## 🌐 Acceso
 
-El sistema está disponible en: https://4xguy.github.io/berel-cancelaciones/
+- Portal principal: https://gc.proceso.app
+- Sistema de Cancelaciones: https://gc.proceso.app/cancelaciones
 
 ## 📊 Estructura de Datos
 
@@ -86,14 +94,15 @@ Para ejecutar localmente:
 
 - Los favoritos se guardan localmente en el navegador
 - Con el sistema de usuarios, los favoritos se sincronizan entre dispositivos usando el mismo ID
-- No se requiere contraseña, solo un ID único memorable
+- Sistema de autenticación simple con contraseña (hash almacenado localmente)
 - El sistema funciona completamente offline una vez cargado
 - Optimizado para dispositivos móviles y tablets
 - Diseño con colores sólidos y alto contraste para mejor legibilidad
 
-## 🔐 Privacidad
+## 🔐 Privacidad y Seguridad
 
 - Todos los datos se almacenan localmente en el navegador (localStorage)
 - No se envía información a servidores externos
-- Los IDs de usuario son solo para identificación local
+- Las contraseñas se almacenan como hash simple (no como texto plano)
 - Cada usuario tiene su propio conjunto de favoritos independiente
+- **Nota**: Este es un sistema de seguridad básico apropiado para datos no sensibles

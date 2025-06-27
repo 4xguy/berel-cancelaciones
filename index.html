@@ -2,1165 +2,191 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Sistema de Cancelaciones Berel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo Color - Aplicaciones</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             background: #1a1a1a;
-            color: #fff;
-            overflow-x: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .screen {
+            color: #e0e0e0;
             min-height: 100vh;
-            display: none;
-            flex-direction: column;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .screen.active {
             display: flex;
+            flex-direction: column;
         }
 
         .header {
             background: #2d2d2d;
             padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .header h1 {
-            font-size: 24px;
+            color: #007bff;
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
 
-        .search-bar {
+        .header p {
+            color: #888;
+            font-size: 1.2em;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
             width: 100%;
-            padding: 15px 20px;
-            font-size: 18px;
-            background: #3d3d3d;
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            outline: none;
-            margin-bottom: 20px;
         }
 
-        .search-bar::placeholder {
-            color: #888;
-        }
-
-        .button-grid {
+        .apps-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-            overflow-y: auto;
-            flex: 1;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
         }
 
-        @media (min-width: 600px) {
-            .button-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .reason-button {
-            background: linear-gradient(145deg, #3d3d3d, #2d2d2d);
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .reason-button:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .reason-button .description {
-            font-size: 18px;
-            font-weight: 500;
-            color: #fff;
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-
-        .reason-button .code {
-            font-size: 14px;
-            color: #888;
-            font-family: monospace;
-        }
-
-        .stage-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            flex: 1;
-        }
-
-        .stage-button {
-            background: linear-gradient(145deg, #2196F3, #1976D2);
-            border: none;
-            border-radius: 15px;
-            padding: 25px;
-            font-size: 20px;
-            font-weight: 500;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
-        }
-
-        .stage-button:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
-        }
-
-        .stage-button:disabled {
-            background: #555;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .result-container {
+        .app-card {
             background: #2d2d2d;
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .result-section {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #444;
-        }
-
-        .result-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .result-label {
-            font-size: 14px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .result-value {
-            font-size: 18px;
-            color: #fff;
-            line-height: 1.5;
-        }
-
-        .motivo-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .motivo-option {
-            background: #3d3d3d;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            line-height: 1.4;
-        }
-
-        .motivo-code {
-            font-weight: bold;
-            color: inherit;
-        }
-
-        .nav-button {
-            background: #555;
-            border: none;
-            border-radius: 10px;
-            padding: 15px 30px;
-            font-size: 18px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 20px;
-        }
-
-        .nav-button:active {
-            transform: scale(0.98);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .procedure-text {
-            white-space: pre-line;
-            line-height: 1.6;
-        }
-
-        .highlight {
-            background: #4CAF50;
-        }
-
-        .no-highlight {
-            background: #f44336;
-        }
-        
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .breadcrumb-item {
-            background: #9b59b6;
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            white-space: nowrap;
-            max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .breadcrumb-item:hover {
-            background: #8e44ad;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-        }
-        
-        .breadcrumb-arrow {
-            color: #666;
-            font-size: 16px;
-        }
-        
-        #observacionesSection {
-            background: #f39c12;
-            border: none;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            position: relative;
-            color: white;
-        }
-        
-        #observacionesSection::before {
-            content: "⚠️";
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-        }
-        
-        #observacionesSection .result-label {
-            color: white;
-            font-weight: bold;
-            font-size: 15px;
-            opacity: 0.9;
-        }
-        
-        #observacionesSection .result-value {
-            font-weight: 500;
-            color: white;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .filter-btn {
-            background-color: #f0f0f0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 18px;
-            cursor: pointer;
+            padding: 30px;
+            text-align: center;
             transition: all 0.3s ease;
-            color: #666;
-        }
-        
-        .filter-btn:hover {
-            background-color: #e0e0e0;
-            transform: translateY(-2px);
-        }
-        
-        .filter-btn.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-        
-        .reason-card {
-            position: relative;
-        }
-        
-        .favorite-star {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 20px;
-            color: #ddd;
             cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        
-        .favorite-star:hover {
-            color: #ffc107;
-        }
-        
-        .favorite-star.active {
-            color: #ffc107;
-        }
-        
-        #summaryCode {
-            font-family: monospace;
-            background-color: #444;
-            padding: 6px 12px;
-            border-radius: 6px;
-            display: inline-block;
-            color: white;
-            border: none;
-            font-weight: 500;
-        }
-        
-        .procedure-section {
-            margin-bottom: 15px;
-        }
-        
-        .procedure-label {
-            display: inline-block;
-            font-weight: bold;
-            color: white;
-            background-color: #007bff;
-            padding: 6px 16px;
-            border-radius: 20px;
-            margin-right: 10px;
-            margin-bottom: 8px;
-            border: none;
-        }
-        
-        .procedure-text {
+            text-decoration: none;
+            color: inherit;
             display: block;
-            padding-left: 20px;
-            line-height: 1.6;
-            color: #e0e0e0;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .user-section {
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .app-card::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        
-        .user-btn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        
-        .user-btn:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #2d2d2d;
-            padding: 8px 16px;
-            border-radius: 20px;
-        }
-        
-        #userDisplay {
-            color: #4CAF50;
-            font-weight: 500;
-        }
-        
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px 8px;
-            transition: all 0.2s;
-        }
-        
-        .logout-btn:hover {
-            color: #ff6b6b;
-        }
-        
-        .modal {
-            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #007bff, #00c6ff);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
-        
-        .modal-content {
-            background: #2d2d2d;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
+
+        .app-card:hover::before {
+            transform: scaleX(1);
         }
-        
-        .modal-content h2 {
+
+        .app-icon {
+            font-size: 4em;
             color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .app-title {
+            font-size: 1.5em;
+            color: #fff;
             margin-bottom: 10px;
         }
-        
-        .modal-content p {
+
+        .app-description {
             color: #888;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .modal-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background: #1a1a1a;
-            color: white;
-            font-size: 16px;
+            line-height: 1.6;
             margin-bottom: 20px;
         }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .modal-btn {
-            padding: 10px 20px;
-            border: none;
+
+        .app-status {
+            display: inline-block;
+            padding: 5px 15px;
             border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 0.9em;
+            font-weight: 500;
         }
-        
-        .modal-btn.primary {
-            background: #007bff;
+
+        .status-active {
+            background: #4CAF50;
             color: white;
         }
-        
-        .modal-btn.primary:hover {
-            background: #0056b3;
-        }
-        
-        .modal-btn:not(.primary) {
-            background: #6c757d;
+
+        .status-coming {
+            background: #ff9800;
             color: white;
         }
-        
-        .modal-btn:not(.primary):hover {
-            background: #5a6268;
+
+        .footer {
+            background: #2d2d2d;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Screen 1: Reason Selection -->
-    <div id="reasonScreen" class="screen active">
-        <div class="header">
-            <h1>Sistema de Cancelaciones</h1>
-            <div class="user-section" id="userSection">
-                <button class="user-btn" id="loginBtn" onclick="showLoginModal()">
-                    <i class="fas fa-user"></i> Iniciar Sesión
-                </button>
-                <div class="user-info" id="userInfo" style="display: none;">
-                    <span id="userDisplay"></span>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </div>
-            <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por descripción...">
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all" title="Todos">
-                    <i class="fas fa-list"></i>
-                </button>
-                <button class="filter-btn" data-filter="error" title="Error">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </button>
-                <button class="filter-btn" data-filter="cliente" title="Cliente">
-                    <i class="fas fa-user"></i>
-                </button>
-                <button class="filter-btn" data-filter="other" title="Otros">
-                    <i class="fas fa-ellipsis-h"></i>
-                </button>
-                <button class="filter-btn" data-filter="favorites" title="Favoritos">
-                    <i class="fas fa-star"></i>
-                </button>
-            </div>
-        </div>
-        <div class="button-grid" id="reasonButtons"></div>
+    <div class="header">
+        <h1>Grupo Color</h1>
+        <p>Portal de Aplicaciones</p>
     </div>
 
-    <!-- Screen 2: Stage Selection -->
-    <div id="stageScreen" class="screen">
-        <div class="header">
-            <h1>Selecciona la Etapa</h1>
+    <div class="container">
+        <div class="apps-grid">
+            <a href="cancelaciones.html" class="app-card">
+                <i class="fas fa-times-circle app-icon"></i>
+                <h2 class="app-title">Sistema de Cancelaciones</h2>
+                <p class="app-description">
+                    Consulta códigos y procedimientos de cancelación. 
+                    Incluye búsqueda inteligente, filtros avanzados y sistema de favoritos.
+                </p>
+                <span class="app-status status-active">Disponible</span>
+            </a>
+
+            <div class="app-card" style="opacity: 0.6; cursor: not-allowed;">
+                <i class="fas fa-chart-line app-icon"></i>
+                <h2 class="app-title">Dashboard de Ventas</h2>
+                <p class="app-description">
+                    Visualiza métricas de ventas en tiempo real con gráficos interactivos 
+                    y reportes personalizados.
+                </p>
+                <span class="app-status status-coming">Próximamente</span>
+            </div>
+
+            <div class="app-card" style="opacity: 0.6; cursor: not-allowed;">
+                <i class="fas fa-warehouse app-icon"></i>
+                <h2 class="app-title">Control de Inventario</h2>
+                <p class="app-description">
+                    Gestiona el inventario con alertas automáticas y seguimiento 
+                    de movimientos en tiempo real.
+                </p>
+                <span class="app-status status-coming">Próximamente</span>
+            </div>
         </div>
-        <div class="breadcrumb" id="stageBreadcrumb">
-            <!-- Breadcrumb will be added dynamically -->
-        </div>
-        <div class="stage-grid" id="stageButtons"></div>
-        <button class="nav-button" onclick="goToReasons()">← Regresar</button>
     </div>
 
-    <!-- Screen 3: Results -->
-    <div id="resultScreen" class="screen">
-        <div class="header">
-            <h1>Información de Cancelación</h1>
-        </div>
-        <div class="breadcrumb" id="breadcrumb">
-            <!-- Breadcrumb items will be added dynamically -->
-        </div>
-        <div class="result-container">
-            <div class="result-section">
-                <div class="result-label">Código</div>
-                <div class="result-value" id="summaryCode"></div>
-            </div>
-            
-            <div class="result-section">
-                <div class="result-label">Descripción</div>
-                <div class="result-value" id="summaryDescription"></div>
-            </div>
-            
-            <div class="result-section">
-                <div class="result-label">Etapa</div>
-                <div class="result-value" id="summaryStage"></div>
-            </div>
-            
-            <div class="result-section">
-                <div class="result-label">Motivo de Cancelación</div>
-                <div class="motivo-options">
-                    <div class="motivo-option">
-                        <span class="motivo-code">01</span> - Comprobantes emitidos con errores con relación
-                    </div>
-                    <div class="motivo-option">
-                        <span class="motivo-code">02</span> - Comprobantes emitidos con errores sin relación
-                    </div>
-                    <div class="motivo-option">
-                        <span class="motivo-code">03</span> - No se llevó a cabo la transacción
-                    </div>
-                </div>
-            </div>
-            
-            <div class="result-section">
-                <div class="result-label">Procedimiento</div>
-                <div class="result-value procedure-text" id="procedure"></div>
-            </div>
-            
-            <div class="result-section" id="periodicidadSection">
-                <div class="result-label">Periodicidad</div>
-                <div class="result-value" id="periodicidad"></div>
-            </div>
-            
-            <div class="result-section" id="sustitucionSection">
-                <div class="result-label">Aplica Sustitución en Corte</div>
-                <div class="result-value" id="sustitucion"></div>
-            </div>
-            
-            <div class="result-section" id="observacionesSection">
-                <div class="result-label">Observaciones Especiales</div>
-                <div class="result-value" id="observaciones"></div>
-            </div>
-        </div>
-        <button class="nav-button" onclick="goToStages()">← Regresar</button>
-        <button class="nav-button" style="background: #4CAF50;" onclick="goToReasons()">Nueva Consulta</button>
-    </div>
-
-    <script>
-        // Embedded data from Excel - based on the shaded cells in the screenshot
-        const cancellationData = [
-            {
-                code: "MDC00001",
-                description: "ERROR EN DESCUENTO",
-                stages: ["Otro Documento"],
-                motivos: ["01"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Generalmente, mismo día",
-                aplicaSustitucion: "No",
-                observaciones: "Si se detecta el descuento posteriormente, se realiza nota de crédito por descuento y se aplica a futuras ventas"
-            },
-            {
-                code: "MDC00002",
-                description: "ERROR EN CLIENTE (CAMBIO DE CLAVE CLIENTE)",
-                stages: ["Prefactura", "Factura", "Remision"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Solicita se deje prefa libre, se manda información de clave de cliente correcta, cuando se libere la prefactura jalar nuevamente; motivo 04: Sustitución de CPO previos y su respectivo comentario y guardar. Oficina: Cancelar factura solicitada con relación \"02\".",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: ""
-            },
-            {
-                code: "MDC00003",
-                description: "ERROR EN CÓDIGO DE PRODUCTO",
-                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Generalmente, mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00004",
-                description: "AGREGÓ PRODUCTO",
-                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00005",
-                description: "QUITO PRODUCTO",
-                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00006",
-                description: "CAMBIO PRODUCTO",
-                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00007",
-                description: "ERROR EN COMANDA",
-                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "NO",
-                observaciones: ""
-            },
-            {
-                code: "MDC00008",
-                description: "ERROR EN FORMA O MÉTODO DE PAGO DE SAE-SAT (EXTERNO)",
-                stages: ["Prefactura", "Factura", "Remision"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: ""
-            },
-            {
-                code: "MDC00009",
-                description: "ERROR EN ENVASADO",
-                stages: ["Prefactura", "Factura", "Remision", "Otro Documento"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00010",
-                description: "ERROR EN TIMBRADO",
-                stages: ["Factura"],
-                motivos: ["01"],
-                procedure: "Al no estar timbrada la factura, no tiene efecto fiscal si se deja libre prefa",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "Aline",
-                observaciones: ""
-            },
-            {
-                code: "MDC00011",
-                description: "CAMBIO Y/O ACTUALIZACIÓN DATOS DE CLIENTE (MISMA CLAVE, CORRECCIÓN EN DOMICILIO, ETC)",
-                stages: ["Factura", "Remision"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: ""
-            },
-            {
-                code: "MDC00012",
-                description: "ERROR EN SERIE",
-                stages: ["Prefactura", "Factura", "Remision"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No",
-                observaciones: "Si la venta de contado se dejó en serie de crédito, no aplica sustitución en corte, ya que la venta no ha sido depositada y debe estar como existente en caja."
-            },
-            {
-                code: "MDC00013",
-                description: "NO SE ENCONTRÓ CLIENTE",
-                stages: ["Prefactura", "Remision"],
-                motivos: ["03"],
-                procedure: "Tienda: Solicita la cancelación total en caso de no haber producto igualado o envasado, en caso de tenerlo, se deberá solicitar autorización para dejar PREFA LIBRE EN SEGUIMIENTO y manejar la venta como nueva, o en su caso dar tratamiento de código \"C\"",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00014",
-                description: "USO DE CFDI",
-                stages: ["Factura"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: ""
-            },
-            {
-                code: "MDC00015",
-                description: "SOLICITÓ FACTURA",
-                stages: ["Remision"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Solicita se deje prefa libre, se manda información de clave de cliente correcta, cuando se libere la prefactura jalar nuevamente; motivo 04: Sustitución de CPO previos y su respectivo comentario y guardar. Oficina: Cancelar factura solicitada con relación \"02\".",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: ""
-            },
-            {
-                code: "MDC00016",
-                description: "SOLICITÓ FACTURA MENOS DE $3,000",
-                stages: ["Remision"],
-                motivos: ["02"],
-                procedure: "Tienda: Solicita se deje prefa libre, se manda información de clave de cliente correcta, cuando se libere la prefactura jalar nuevamente; motivo 04: Sustitución de CPO previos y su respectivo comentario y guardar. Oficina: Cancelar factura solicitada con relación \"02\".",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: "Se elige error sin relación, ya que al solo existir una factura y a las que pasa son más de una, no se puede relacionar la misma cancelación dos veces"
-            },
-            {
-                code: "MDC00017",
-                description: "NO TENÍA DINERO EL CLIENTE",
-                stages: ["Prefactura", "Remision"],
-                motivos: ["03"],
-                procedure: "Tienda: Solicita la cancelación total en caso de no haber producto igualado o envasados, en caso de tenerlo, se deberá solicitar autorización para dejar PREFA LIBRE EN SEGUIMIENTO y manejar la venta como nueva, o en su caso dar tratamiento de código \"C\"",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00018",
-                description: "SALIÓ PRECIO DEL PRODUCTO EN $0",
-                stages: ["Prefactura", "Factura", "Remision"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00019",
-                description: "ALTA DE CLIENTE",
-                stages: ["Prefactura"],
-                motivos: ["02"],
-                procedure: "La prefactura no se timbra en sae",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            },
-            {
-                code: "MDC00020",
-                description: "NO RELACIONÓ",
-                stages: ["Factura"],
-                motivos: ["02"],
-                procedure: "Tienda: Solicita se deje prefa libre, cuando se libere la prefactura jalar nuevamente, relacionar con motivo 04: Sustitución de CFDI previos y su respectivo comentario y guardar. Oficina: Cancelar Factura solicitada con relación \"02\"",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "",
-                observaciones: ""
-            },
-            {
-                code: "MDC00021",
-                description: "RÉGIMEN FISCAL INCORRECTO",
-                stages: ["Factura"],
-                motivos: ["01", "02"],
-                procedure: "Tienda: Captura nuevamente el documento de venta (Factura, prefa o remisión) \"sin errores\", solicita la cancelación del documento erróneo y envía los datos de a cual documento pasó. Oficina: Cancela el folio solicitado y relaciona en la cancelación el folio al que pasó.",
-                periodicidad: "Puede ser mismo día o diferente día",
-                aplicaSustitucion: "No/Si",
-                observaciones: ""
-            },
-            {
-                code: "MDC00022",
-                description: "CLIENTE CANCELÓ LA VENTA",
-                stages: ["Prefactura", "Remision"],
-                motivos: ["03"],
-                procedure: "Tienda: Solicita la cancelación total en caso de no haber producto igualado o envasados, en caso de tenerlo, se deberá solicitar autorización para dejar PREFA LIBRE EN SEGUIMIENTO y manejar la venta como nueva, o en su caso dar tratamiento de código \"C\"",
-                periodicidad: "Mismo día",
-                aplicaSustitucion: "No",
-                observaciones: ""
-            }
-        ];
-
-        const stages = [
-            "Prefactura",
-            "Factura",
-            "Remision",
-            "Otro Documento",
-            "Cancelacion total",
-            "Prefactura Libre"
-        ];
-
-        let selectedReason = null;
-        let selectedStage = null;
-        let currentFilter = 'all';
-        let currentUser = localStorage.getItem('currentUser');
-        let favorites = [];
-
-        function loadFavorites() {
-            if (currentUser) {
-                favorites = JSON.parse(localStorage.getItem(`favorites_${currentUser}`) || '[]');
-            } else {
-                favorites = JSON.parse(localStorage.getItem('cancellationFavorites') || '[]');
-            }
-        }
-
-        function saveFavorites() {
-            if (currentUser) {
-                localStorage.setItem(`favorites_${currentUser}`, JSON.stringify(favorites));
-            } else {
-                localStorage.setItem('cancellationFavorites', JSON.stringify(favorites));
-            }
-        }
-
-        function initializeApp() {
-            // Check if user is logged in
-            if (currentUser) {
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
-                document.getElementById('userDisplay').textContent = currentUser;
-            }
-            
-            loadFavorites();
-            renderReasonButtons();
-            document.getElementById('searchInput').addEventListener('input', filterReasons);
-            
-            // Add filter button listeners
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const button = e.target.closest('.filter-btn');
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    button.classList.add('active');
-                    currentFilter = button.dataset.filter;
-                    renderReasonButtons();
-                });
-            });
-        }
-
-        function renderReasonButtons() {
-            const container = document.getElementById('reasonButtons');
-            container.innerHTML = '';
-            
-            // Filter data based on current filter
-            let filteredData = cancellationData;
-            
-            if (currentFilter === 'error') {
-                filteredData = cancellationData.filter(item => 
-                    item.description.toUpperCase().includes('ERROR')
-                );
-            } else if (currentFilter === 'cliente') {
-                filteredData = cancellationData.filter(item => 
-                    item.description.toUpperCase().includes('CLIENTE')
-                );
-            } else if (currentFilter === 'other') {
-                filteredData = cancellationData.filter(item => 
-                    !item.description.toUpperCase().includes('ERROR') && 
-                    !item.description.toUpperCase().includes('CLIENTE')
-                );
-            } else if (currentFilter === 'favorites') {
-                filteredData = cancellationData.filter(item => 
-                    favorites.includes(item.code)
-                );
-            }
-            
-            filteredData.forEach(item => {
-                const button = document.createElement('button');
-                button.className = 'reason-button reason-card';
-                button.onclick = () => selectReason(item);
-                
-                const isFavorite = favorites.includes(item.code);
-                
-                button.innerHTML = `
-                    <div class="description">${item.description}</div>
-                    <div class="code">${item.code}</div>
-                    <i class="fas fa-star favorite-star ${isFavorite ? 'active' : ''}" 
-                       onclick="event.stopPropagation(); toggleFavorite('${item.code}')"></i>
-                `;
-                container.appendChild(button);
-            });
-        }
-        
-        function toggleFavorite(code) {
-            const index = favorites.indexOf(code);
-            if (index > -1) {
-                favorites.splice(index, 1);
-            } else {
-                favorites.push(code);
-            }
-            saveFavorites();
-            renderReasonButtons();
-        }
-        
-        function showLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-            document.getElementById('userIdInput').focus();
-        }
-        
-        function hideLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('userIdInput').value = '';
-        }
-        
-        function login() {
-            const userId = document.getElementById('userIdInput').value.trim();
-            if (userId) {
-                currentUser = userId;
-                localStorage.setItem('currentUser', userId);
-                
-                // Load user's favorites
-                loadFavorites();
-                
-                // Update UI
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
-                document.getElementById('userDisplay').textContent = userId;
-                
-                // Refresh the display
-                renderReasonButtons();
-                hideLoginModal();
-            }
-        }
-        
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            
-            // Load generic favorites
-            loadFavorites();
-            
-            // Update UI
-            document.getElementById('loginBtn').style.display = 'block';
-            document.getElementById('userInfo').style.display = 'none';
-            
-            // Refresh the display
-            renderReasonButtons();
-        }
-
-        function filterReasons(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const buttons = document.querySelectorAll('.reason-button');
-            
-            buttons.forEach((button) => {
-                const description = button.querySelector('.description').textContent.toLowerCase();
-                const code = button.querySelector('.code').textContent.toLowerCase();
-                const match = description.includes(searchTerm) || code.includes(searchTerm);
-                button.style.display = match ? 'block' : 'none';
-            });
-        }
-
-        function selectReason(reason) {
-            selectedReason = reason;
-            
-            // Update stage breadcrumb
-            const stageBreadcrumb = document.getElementById('stageBreadcrumb');
-            stageBreadcrumb.innerHTML = `
-                <div class="breadcrumb-item" onclick="goToReasons()">${reason.description}</div>
-            `;
-            
-            renderStageButtons();
-            showScreen('stageScreen');
-        }
-
-        function renderStageButtons() {
-            const container = document.getElementById('stageButtons');
-            container.innerHTML = '';
-            
-            stages.forEach(stage => {
-                const button = document.createElement('button');
-                button.className = 'stage-button';
-                button.textContent = stage;
-                button.disabled = !selectedReason.stages.includes(stage);
-                if (!button.disabled) {
-                    button.onclick = () => selectStage(stage);
-                }
-                container.appendChild(button);
-            });
-        }
-
-        function selectStage(stage) {
-            selectedStage = stage;
-            showResults();
-        }
-
-        function showResults() {
-            // Update breadcrumb
-            const breadcrumb = document.getElementById('breadcrumb');
-            breadcrumb.innerHTML = `
-                <div class="breadcrumb-item" onclick="goToReasons()">${selectedReason.description}</div>
-                <span class="breadcrumb-arrow">→</span>
-                <div class="breadcrumb-item" onclick="goToStages()">${selectedStage}</div>
-            `;
-            
-            // Update summary section
-            document.getElementById('summaryCode').textContent = selectedReason.code;
-            document.getElementById('summaryDescription').textContent = selectedReason.description;
-            document.getElementById('summaryStage').textContent = selectedStage;
-            
-            // Show applicable motivos based on selected reason
-            const motivoOptions = document.querySelectorAll('.motivo-option');
-            motivoOptions.forEach((option, index) => {
-                const motivoCode = ['01', '02', '03'][index];
-                if (selectedReason.motivos.includes(motivoCode)) {
-                    option.style.background = '#4CAF50';
-                    option.style.border = 'none';
-                    option.style.color = 'white';
-                } else {
-                    option.style.background = '#3d3d3d';
-                    option.style.border = 'none';
-                    option.style.color = '#e0e0e0';
-                }
-            });
-
-            // Format procedure text to separate Tienda and Oficina
-            const procedureElement = document.getElementById('procedure');
-            const procedureText = selectedReason.procedure;
-            
-            // Split by "Oficina:" and format
-            if (procedureText.includes('Oficina:')) {
-                const parts = procedureText.split('Oficina:');
-                const tiendaPart = parts[0].replace('Tienda:', '').trim();
-                const oficinaPart = parts[1].trim();
-                
-                procedureElement.innerHTML = `
-                    <div class="procedure-section">
-                        <span class="procedure-label">Tienda:</span>
-                        <span class="procedure-text">${tiendaPart}</span>
-                    </div>
-                    <div class="procedure-section">
-                        <span class="procedure-label">Oficina:</span>
-                        <span class="procedure-text">${oficinaPart}</span>
-                    </div>
-                `;
-            } else {
-                procedureElement.textContent = procedureText;
-            }
-            
-            // Periodicidad
-            if (selectedReason.periodicidad) {
-                document.getElementById('periodicidad').textContent = selectedReason.periodicidad;
-                document.getElementById('periodicidadSection').classList.remove('hidden');
-            } else {
-                document.getElementById('periodicidadSection').classList.add('hidden');
-            }
-            
-            // Sustitución
-            if (selectedReason.aplicaSustitucion) {
-                document.getElementById('sustitucion').textContent = selectedReason.aplicaSustitucion;
-                document.getElementById('sustitucionSection').classList.remove('hidden');
-            } else {
-                document.getElementById('sustitucionSection').classList.add('hidden');
-            }
-            
-            // Observaciones
-            if (selectedReason.observaciones) {
-                document.getElementById('observaciones').textContent = selectedReason.observaciones;
-                document.getElementById('observacionesSection').classList.remove('hidden');
-            } else {
-                document.getElementById('observacionesSection').classList.add('hidden');
-            }
-            
-            showScreen('resultScreen');
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        function goToReasons() {
-            selectedReason = null;
-            selectedStage = null;
-            document.getElementById('searchInput').value = '';
-            renderReasonButtons();
-            showScreen('reasonScreen');
-        }
-
-        function goToStages() {
-            showScreen('stageScreen');
-        }
-
-        // Initialize app
-        initializeApp();
-    </script>
-    
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Iniciar Sesión</h2>
-            <p>Ingresa tu ID de usuario para sincronizar tus favoritos</p>
-            <input type="text" id="userIdInput" placeholder="Tu ID único (ej: juan123)" class="modal-input" onkeypress="if(event.key==='Enter')login()">
-            <div class="modal-buttons">
-                <button class="modal-btn primary" onclick="login()">Iniciar Sesión</button>
-                <button class="modal-btn" onclick="hideLoginModal()">Cancelar</button>
-            </div>
-        </div>
+    <div class="footer">
+        <p>&copy; 2024 Grupo Color. Todos los derechos reservados.</p>
     </div>
 </body>
 </html>
